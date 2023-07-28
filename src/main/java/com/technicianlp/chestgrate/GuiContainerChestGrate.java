@@ -21,8 +21,8 @@ public class GuiContainerChestGrate extends GuiContainer {
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        this.fontRendererObj.drawString(this.tile.isCustomInventoryName() ? this.tile.getInventoryName() : I18n.format(this.tile.getInventoryName()), 8, 6, 4210752);
-        this.fontRendererObj.drawString(this.player.isCustomInventoryName() ? this.player.getInventoryName() : I18n.format(this.player.getInventoryName()), 8, this.ySize - 96 + 2, 4210752);
+        this.fontRendererObj.drawString(this.tile.hasCustomInventoryName() ? this.tile.getInventoryName() : I18n.format(this.tile.getInventoryName()), 8, 6, 4210752);
+        this.fontRendererObj.drawString(this.player.hasCustomInventoryName() ? this.player.getInventoryName() : I18n.format(this.player.getInventoryName()), 8, this.ySize - 96 + 2, 4210752);
     }
 
     @Override

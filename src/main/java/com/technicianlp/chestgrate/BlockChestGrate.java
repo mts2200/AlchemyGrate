@@ -30,8 +30,8 @@ public class BlockChestGrate extends Block {
         this.setStepSound(Block.soundTypeMetal);
         this.setCreativeTab(Thaumcraft.tabTC);
         this.setBlockBounds(0.0F, 0.8125F, 0.0F, 1.0F, 1.0F, 1.0F);
-        this.setUnlocalizedName("alchgrate");
-        this.setTextureName("alchgrate:alchgrate");
+        this.setBlockName("alchgrate");
+        this.setBlockTextureName("alchgrate:alchgrate");
     }
 
     @Override
@@ -45,7 +45,18 @@ public class BlockChestGrate extends Block {
     }
 
     @Override
-    public boolean isFullBlock() {
+    @SideOnly(Side.CLIENT)
+    public boolean renderAsNormalBlock() {
+        return super.renderAsNormalBlock();
+    }
+
+    @Override
+    public boolean isNormalCube() {
+        return false;
+    }
+
+    @Override
+    public boolean func_149730_j() {
         return false;
     }
 
@@ -54,8 +65,8 @@ public class BlockChestGrate extends Block {
         return false;
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
+    @SideOnly(Side.CLIENT)
     public AxisAlignedBB getSelectedBoundingBoxFromPool(World worldIn, int x, int y, int z) {
         this.setBlockBounds(0.0F, 0.8125F, 0.0F, 1.0F, 1.0F, 1.0F);
         return super.getSelectedBoundingBoxFromPool(worldIn, x, y, z);

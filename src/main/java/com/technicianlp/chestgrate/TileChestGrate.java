@@ -102,11 +102,11 @@ public class TileChestGrate extends TileEntity implements IInventory {
 
     @Override
     public String getInventoryName() {
-        return this.isCustomInventoryName() ? this.customName : "container.alchgrate";
+        return this.hasCustomInventoryName() ? this.customName : "container.alchgrate";
     }
 
     @Override
-    public boolean isCustomInventoryName() {
+    public boolean hasCustomInventoryName() {
         return this.customName != null && !this.customName.equals("");
     }
 
@@ -121,11 +121,13 @@ public class TileChestGrate extends TileEntity implements IInventory {
     }
 
     @Override
-    public void openChest() {
+    public void openInventory() {
+        // NO-OP
     }
 
     @Override
-    public void closeChest() {
+    public void closeInventory() {
+        // NO-OP
     }
 
     @Override
@@ -143,7 +145,7 @@ public class TileChestGrate extends TileEntity implements IInventory {
         }
         nbt.setTag("Items", list);
 
-        if (this.isCustomInventoryName()) {
+        if (this.hasCustomInventoryName()) {
             nbt.setString("CustomName", this.customName);
         }
     }
