@@ -107,7 +107,7 @@ public class TileChestGrate extends TileEntity implements IInventory {
 
 	@Override
 	public boolean hasCustomInventoryName() {
-		return this.customName != null && !this.customName.equals("");
+		return this.customName != null && !this.customName.isEmpty();
 	}
 
 	@Override
