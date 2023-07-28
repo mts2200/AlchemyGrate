@@ -3,6 +3,7 @@ package com.technicianlp.chestgrate;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
@@ -15,14 +16,9 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import thaumcraft.common.Thaumcraft;
-import thaumcraft.common.config.ConfigBlocks;
+import thaumcraft.common.tiles.TileAlchemyFurnaceAdvanced;
 
-import java.util.Random;
-
-public class BlockChestGrate extends Block {
-
-	private final Random random = new Random();
-
+public class BlockChestGrate extends Block implements ITileEntityProvider {
 	protected BlockChestGrate() {
 		super(Material.iron);
 		this.setHardness(3.0F);
@@ -108,22 +104,28 @@ public class BlockChestGrate extends Block {
 	}
 
 	@Override
+	public TileEntity createNewTileEntity(World worldIn, int meta) {
+		return createTileEntity(worldIn, meta);
+	}
+
+	@Override
 	public void breakBlock(World world, int x, int y, int z, Block blockBroken, int meta) {
-		IInventory tile = (IInventory) world.getTileEntity(x, y, z);
-		if (tile != null) {
-			for (int i1 = 0; i1 < tile.getSizeInventory(); ++i1) {
-				ItemStack itemstack = tile.getStackInSlot(i1);
+		TileEntity tile = world.getTileEntity(x, y, z);
+		if (!world.isRemote && tile instanceof TileChestGrate) {
+			TileChestGrate chest = (TileChestGrate) tile;
+			for (int i = 0, size = chest.getSizeInventory(); i < size; ++i) {
+				ItemStack itemstack = chest.getStackInSlot(i);
 				if (itemstack != null) {
-					float xOff = this.random.nextFloat() * 0.8F + 0.1F;
-					float yOff = this.random.nextFloat() * 0.8F + 0.1F;
-					float zOff = this.random.nextFloat() * 0.8F + 0.1F;
+					float xOff = world.rand.nextFloat() * 0.8F + 0.1F;
+					float yOff = world.rand.nextFloat() * 0.8F + 0.1F;
+					float zOff = world.rand.nextFloat() * 0.8F + 0.1F;
 
-					EntityItem entityitem = new EntityItem(world, (float) x + xOff, (float) y + yOff, (float) z + zOff, itemstack);
+					EntityItem entityitem = new EntityItem(world, x + xOff, y + yOff, z + zOff, itemstack);
+					entityitem.motionX = (float) world.rand.nextGaussian() * 0.05f;
+					entityitem.motionY = (float) world.rand.nextGaussian() * 0.05f + 0.2F;
+					entityitem.motionZ = (float) world.rand.nextGaussian() * 0.05f;
 
-					entityitem.motionX = (float) this.random.nextGaussian() * 0.05f;
-					entityitem.motionY = (float) this.random.nextGaussian() * 0.05f + 0.2F;
-					entityitem.motionZ = (float) this.random.nextGaussian() * 0.05f;
-					world.spawnEntityInWorld(entityitem);
+					if (world.spawnEntityInWorld(entityitem)) chest.setInventorySlotContents(i, null);
 				}
 			}
 		}
@@ -133,15 +135,16 @@ public class BlockChestGrate extends Block {
 	@Override
 	public void onBlockPlacedBy(World worldIn, int x, int y, int z, EntityLivingBase placer, ItemStack stack) {
 		if (stack.hasDisplayName()) {
-			((TileChestGrate) worldIn.getTileEntity(x, y, z)).customName = stack.getDisplayName();
+			TileEntity tile = worldIn.getTileEntity(x, y, z);
+			if (tile instanceof TileChestGrate) {
+				((TileChestGrate) tile).customName = stack.getDisplayName();
+			}
 		}
 		super.onBlockPlacedBy(worldIn, x, y, z, placer, stack);
 	}
 
 	private boolean validPosition(World world, int x, int y, int z) {
-		Block below = world.getBlock(x, y - 1, z);
-		int meta = world.getBlockMetadata(x, y - 1, z);
-		return (below == ConfigBlocks.blockAlchemyFurnace && meta == 0);
+		return world.getTileEntity(x, y - 1, z) instanceof TileAlchemyFurnaceAdvanced;
 	}
 
 	@Override
