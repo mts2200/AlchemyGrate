@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.util.Constants;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.common.lib.crafting.ThaumcraftCraftingManager;
 import thaumcraft.common.tiles.TileAlchemyFurnaceAdvanced;
@@ -155,14 +156,14 @@ public class TileChestGrate extends TileEntity implements IInventory {
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
 
-		NBTTagList list = nbt.getTagList("Items", 10);
+		NBTTagList list = nbt.getTagList("Items", Constants.NBT.TAG_COMPOUND);
 		for (int i = 0; i < list.tagCount(); ++i) {
 			NBTTagCompound stackTag = list.getCompoundTagAt(i);
 			int slot = stackTag.getByte("Slot") & 255;
 			this.setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(stackTag));
 		}
 
-		if (nbt.hasKey("CustomName", 8)) {
+		if (nbt.hasKey("CustomName", Constants.NBT.TAG_STRING)) {
 			this.customName = nbt.getString("CustomName");
 		}
 	}
