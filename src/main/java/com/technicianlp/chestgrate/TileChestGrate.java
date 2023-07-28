@@ -1,7 +1,7 @@
 package com.technicianlp.chestgrate;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -12,12 +12,17 @@ import thaumcraft.api.aspects.AspectList;
 import thaumcraft.common.lib.crafting.ThaumcraftCraftingManager;
 import thaumcraft.common.tiles.TileAlchemyFurnaceAdvanced;
 
-public class TileChestGrate extends TileThaumcraft implements IInventory {
+import java.util.stream.IntStream;
+
+public class TileChestGrate extends TileThaumcraft implements ISidedInventory {
 	public static final String TAG_ITEMS = "Items";
 	public static final String TAG_SLOT = "Slot";
 	public static final String TAG_CUSTOM_NAME = "CustomName";
 
-	private final ItemStack[] contents = new ItemStack[5];
+	protected static final int SIZE = 5;
+	protected static final int[] ACCESSIBLE_SIDES = IntStream.range(0, SIZE).toArray();
+
+	private final ItemStack[] contents = new ItemStack[SIZE];
 	public String customName = null;
 
 	@Override
@@ -41,7 +46,7 @@ public class TileChestGrate extends TileThaumcraft implements IInventory {
 
 	@Override
 	public int getSizeInventory() {
-		return 5;
+		return SIZE;
 	}
 
 	@Override
@@ -169,5 +174,20 @@ public class TileChestGrate extends TileThaumcraft implements IInventory {
 		if (nbt.hasKey(TAG_CUSTOM_NAME, Constants.NBT.TAG_STRING)) {
 			this.customName = nbt.getString(TAG_CUSTOM_NAME);
 		}
+	}
+
+	@Override
+	public int[] getAccessibleSlotsFromSide(int side) {
+		return ACCESSIBLE_SIDES;
+	}
+
+	@Override
+	public boolean canInsertItem(int slot, ItemStack stack, int side) {
+		return isItemValidForSlot(slot, stack);
+	}
+
+	@Override
+	public boolean canExtractItem(int slot, ItemStack stack, int side) {
+		return true;
 	}
 }
