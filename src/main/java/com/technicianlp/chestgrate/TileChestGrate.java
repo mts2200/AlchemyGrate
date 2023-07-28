@@ -7,11 +7,15 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.Constants;
+import thaumcraft.api.TileThaumcraft;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.common.lib.crafting.ThaumcraftCraftingManager;
 import thaumcraft.common.tiles.TileAlchemyFurnaceAdvanced;
 
-public class TileChestGrate extends TileEntity implements IInventory {
+public class TileChestGrate extends TileThaumcraft implements IInventory {
+	public static final String TAG_ITEMS = "Items";
+	public static final String TAG_SLOT = "Slot";
+	public static final String TAG_CUSTOM_NAME = "CustomName";
 
 	private final ItemStack[] contents = new ItemStack[5];
 	public String customName = null;
@@ -100,7 +104,6 @@ public class TileChestGrate extends TileEntity implements IInventory {
 		return al.size() != 0;
 	}
 
-
 	@Override
 	public String getInventoryName() {
 		return this.hasCustomInventoryName() ? this.customName : "container.alchgrate";
@@ -132,40 +135,39 @@ public class TileChestGrate extends TileEntity implements IInventory {
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbt) {
-		super.writeToNBT(nbt);
+	public void writeCustomNBT(NBTTagCompound nbt) {
+		super.writeCustomNBT(nbt);
 
 		NBTTagList list = new NBTTagList();
 		for (int i = 0, size = getSizeInventory(); i < size; ++i) {
 			ItemStack stack = getStackInSlot(i);
 			if (stack != null) {
 				NBTTagCompound stackTag = new NBTTagCompound();
-				stackTag.setByte("Slot", (byte) i);
+				stackTag.setByte(TAG_SLOT, (byte) i);
 				stack.writeToNBT(stackTag);
 				list.appendTag(stackTag);
 			}
 		}
-		nbt.setTag("Items", list);
+		nbt.setTag(TAG_ITEMS, list);
 
 		if (this.hasCustomInventoryName()) {
-			nbt.setString("CustomName", this.customName);
+			nbt.setString(TAG_CUSTOM_NAME, this.customName);
 		}
 	}
 
-
 	@Override
-	public void readFromNBT(NBTTagCompound nbt) {
-		super.readFromNBT(nbt);
+	public void readCustomNBT(NBTTagCompound nbt) {
+		super.readCustomNBT(nbt);
 
-		NBTTagList list = nbt.getTagList("Items", Constants.NBT.TAG_COMPOUND);
-		for (int i = 0; i < list.tagCount(); ++i) {
+		NBTTagList list = nbt.getTagList(TAG_ITEMS, Constants.NBT.TAG_COMPOUND);
+		for (int i = 0, count = list.tagCount(); i < count; ++i) {
 			NBTTagCompound stackTag = list.getCompoundTagAt(i);
-			int slot = stackTag.getByte("Slot") & 255;
+			int slot = stackTag.getByte(TAG_SLOT) & 255;
 			this.setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(stackTag));
 		}
 
-		if (nbt.hasKey("CustomName", Constants.NBT.TAG_STRING)) {
-			this.customName = nbt.getString("CustomName");
+		if (nbt.hasKey(TAG_CUSTOM_NAME, Constants.NBT.TAG_STRING)) {
+			this.customName = nbt.getString(TAG_CUSTOM_NAME);
 		}
 	}
 }
