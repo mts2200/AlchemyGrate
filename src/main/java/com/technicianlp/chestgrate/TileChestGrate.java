@@ -56,7 +56,7 @@ public class TileChestGrate extends TileEntity implements IInventory {
 				this.contents[index] = null;
 			} else {
 				itemstack = this.contents[index].splitStack(count);
-				if (this.contents[index].stackSize == 0) {
+				if (this.contents[index].stackSize <= 0) {
 					this.contents[index] = null;
 				}
 			}
@@ -82,7 +82,7 @@ public class TileChestGrate extends TileEntity implements IInventory {
 		if (stack != null && stack.stackSize > this.getInventoryStackLimit())
 			stack.stackSize = this.getInventoryStackLimit();
 
-		if (stack != null && stack.stackSize == 0)
+		if (stack != null && stack.stackSize <= 0)
 			stack = null;
 
 		this.contents[index] = stack;
@@ -118,7 +118,7 @@ public class TileChestGrate extends TileEntity implements IInventory {
 
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer player) {
-		return player.getDistanceSq(this.xCoord, this.yCoord, this.zCoord) <= 64;
+		return player.isEntityAlive() && player.worldObj.getTileEntity(xCoord, yCoord, zCoord) == this && player.getDistanceSq(this.xCoord, this.yCoord, this.zCoord) <= 64;
 	}
 
 	@Override
@@ -136,11 +136,12 @@ public class TileChestGrate extends TileEntity implements IInventory {
 		super.writeToNBT(nbt);
 
 		NBTTagList list = new NBTTagList();
-		for (int i = 0; i < this.getSizeInventory(); ++i) {
-			if (this.getStackInSlot(i) != null) {
+		for (int i = 0, size = getSizeInventory(); i < size; ++i) {
+			ItemStack stack = getStackInSlot(i);
+			if (stack != null) {
 				NBTTagCompound stackTag = new NBTTagCompound();
 				stackTag.setByte("Slot", (byte) i);
-				this.getStackInSlot(i).writeToNBT(stackTag);
+				stack.writeToNBT(stackTag);
 				list.appendTag(stackTag);
 			}
 		}
