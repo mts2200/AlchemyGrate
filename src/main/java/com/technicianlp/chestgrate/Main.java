@@ -15,7 +15,7 @@ import thaumcraft.api.research.ResearchPage;
 import thaumcraft.common.config.ConfigBlocks;
 import thaumcraft.common.config.ConfigItems;
 
-@Mod(modid = "alchgrate", name = "Alchemical Grate", version = "1.0", dependencies = "required-after:Thaumcraft")
+@Mod(modid = "alchgrate", name = "Alchemical Grate", version = "1.1.0", dependencies = "required-after:Thaumcraft")
 public class Main {
 
 	@Mod.Instance
